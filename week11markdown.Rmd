@@ -1,0 +1,56 @@
+---
+title: "Week11"
+author: "Ryan C McDonnell"
+date: "5/6/2021"
+output: html_document
+---
+
+```{r libraries, include=FALSE}
+library(shiny)
+library(markdown)
+library(tidyverse)
+library(lm.beta)
+```
+
+## Data Import and Cleaning 
+
+In this code we downloaded the relevant data, set the working directory and imported it into r. 
+We then filtered to keep 3 variables, reformatted the gender variable, and filtered the data 
+
+```{r data import and cleaning, echo = FALSE, message = FALSE} 
+setwd("C:/Users/Admin/Documents/R/Markdown")
+
+health_tbl <- read_tsv("w4inhome_dvn.tab") %>% 
+  select(preg = H4TR9, gender = BIO_SEX4, attract = H4MH8) %>%
+  mutate(gender=factor(gender,levels=c(1,2), labels=c("male", "female"))) %>%
+  filter(preg < 96) %>%
+  filter(attract < 4)
+```
+
+
+## Analysis 
+
+```{r Analysis, echo = FALSE} 
+model_1 <- lm(preg ~ attract * gender, data = health_tbl)
+
+par(mfrow=c(2,2))
+plot(model_1)
+
+### According to the q-q plot the data do not appear to be normally distributed
+
+summary(model_1)
+lm.beta(model_1)
+
+```
+
+## Visualization 
+
+```{r visualization, echo = FALSE}
+ggplot(health_tbl, aes(attract, preg, color=gender)) +
+  geom_jitter() +
+  geom_smooth(method="lm", se=F) +
+  xlab("Self Perception of Attractiveness") + 
+  ylab("Number of Pregnancies")
+
+```
+
