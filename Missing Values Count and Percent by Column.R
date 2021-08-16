@@ -20,7 +20,7 @@
     print(output4)
     }
 
-# Using function on publically available data
+# Using function on publicaly available data
 
 # url of data set 
   url <- "http://peopleanalytics-regression-book.org/data/salespeople.csv"
