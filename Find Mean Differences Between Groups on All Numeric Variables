@@ -1,0 +1,55 @@
+#Function used to calculate differences between variable means for two specified values of a variable 
+## e.g., calculating mean differences between "supervisors" and "employees" across days absent, performance ratings, tenure, etc
+# Function takes following arguments: 1) dataframe (df) 2) column from which to find groups (col) 3) values within columns to group by (x,y)
+# Running function requires dplyr package to be loaded 
+
+
+
+diff_mean <- function(df, col, x, y) {
+  
+  
+  col_names <- vector("integer", ncol(df)) 
+  mean_x <- vector("double", ncol(df)) 
+  mean_y <- vector("double", ncol(df)) 
+  mean_diffs <- vector("double", ncol(df)) 
+  
+  for (i in seq_along(df)) {
+    
+    col_names[i] <- colnames(df)[i] 
+    
+    df_x <- filter(df, col == x) 
+    
+    df_y <- filter(df, col == y) 
+    
+    mean_x <- mean(df_x[,i])
+    
+    mean_y <- mean (df_y[,i])
+    
+    mean_diffs[i] <- mean_x - mean_y
+  }
+  
+  output <- data.frame(col_names, mean_diffs)
+  
+  return(output)
+  
+  
+}
+
+
+
+# Using function on publicaly available data
+
+# url of data set 
+url <- "http://peopleanalytics-regression-book.org/data/salespeople.csv"
+
+# load the data set and store it as a dataframe called salespeople
+salespeople <- read.csv(url)
+salespeople <- na.omit(salespeople)
+
+#Load dplyr function to access pipe operator (%>%)
+library(dplyr)
+
+diff <- diff_mean(df = salespeople, col = salespeople$promoted, x= 1, y= 0) 
+
+
+diff %>% arrange(mean_diffs)
